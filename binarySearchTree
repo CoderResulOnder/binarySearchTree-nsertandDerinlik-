@@ -1,0 +1,202 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace binaryTreeSinavSoru1
+{
+    class dugum
+    {
+        public int deger;
+        public dugum sagcocuk;
+        public dugum solcocuk;
+
+        public dugum(int value)
+        {
+            deger = value;
+            sagcocuk = null;
+            solcocuk = null;
+        }
+
+        public bool yaprakmi(ref dugum gelendugum)
+        {
+            return (gelendugum.solcocuk == null && gelendugum.sagcocuk == null);
+
+        }
+
+        public void veriEkle(ref dugum anadugum, int eklenecek)
+        {
+            if (anadugum == null)
+            {
+                anadugum = new dugum(eklenecek);
+
+            }
+            else if (anadugum.deger < eklenecek)
+            {
+                veriEkle(ref anadugum.sagcocuk, eklenecek);
+            }
+
+            else if (anadugum.deger > eklenecek)
+            {
+               veriEkle(ref anadugum.solcocuk, eklenecek);
+            }
+        }
+
+        public bool Arama(dugum agac, int aranan_sayi)
+        {
+            if (agac == null)
+                return false;
+
+            if (agac.deger == aranan_sayi)
+            {
+                return true;
+            }
+            else if (agac.deger < aranan_sayi)
+            {
+                return Arama(agac.sagcocuk, aranan_sayi);
+            }
+            else if (agac.deger > aranan_sayi)
+            {
+                return Arama(agac.solcocuk,aranan_sayi);
+            }
+
+            return false;
+        }
+
+        public void AgacYaz(dugum  agac)
+        {
+            if (agac == null)
+                return;
+
+            AgacYaz(agac.solcocuk);
+            Console.Write("{0}  " , agac.deger);
+            AgacYaz(agac.sagcocuk);
+        }
+
+    }
+
+    class BinaryTree
+    {
+        public dugum kok;
+        public int elemansayisi;
+
+        public BinaryTree()
+        {
+            kok = null;
+            elemansayisi = 0;
+        }
+        public bool agacBosmu()
+        {
+            return kok == null;
+        }
+
+        public void Ekle(int eklenecekSayi)
+        {
+            if (this.kok==null)
+            {
+                this.kok = new dugum(eklenecekSayi);
+                //this.elemansayisi++;
+            }
+            else
+            {
+                kok.veriEkle(ref kok, eklenecekSayi);
+            }
+
+            this.elemansayisi++;
+        }
+        public int DerinlikBul(dugum agac) {
+
+            if (agac == null)
+            {
+                return -1;
+            }
+            else
+            {
+                int solDerinlik = DerinlikBul(agac.solcocuk);
+                int sagderinlik = DerinlikBul(agac.sagcocuk);
+                if (sagderinlik < solDerinlik)
+                {
+                    return solDerinlik + 1;
+                }
+                else
+                {
+                    return sagderinlik + 1;
+                }
+            }
+
+        }
+
+        public bool Varmi(dugum aranacak,int aranan_sayi)
+        {
+
+            if (aranacak == null)
+                return false;
+
+            if (aranacak.deger == aranan_sayi)
+            {
+                return true;
+            }
+            else if (aranacak.deger < aranan_sayi)
+            {
+                return Varmi(aranacak.sagcocuk, aranan_sayi);
+            }
+            else if (aranacak.deger > aranan_sayi)
+            {
+                return Varmi(aranacak.solcocuk, aranan_sayi);
+            }
+
+            return false;
+
+
+        }
+
+        public void AgacYaz()
+        {
+            if (this.kok!=null)
+                kok.AgacYaz(this.kok);
+        }
+
+        public int ElemanSayisi()
+        {
+            return this.elemansayisi;
+        }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+
+            BinaryTree agacim = new BinaryTree();
+
+
+            Random rnd = new Random();
+            int sayi = 0;
+            for (int i = 0; i < 1000000; i++)
+            {
+
+                for (int j = 0; j < 100; j++)
+                {
+                    sayi = rnd.Next(500000000);
+
+                    while (agacim.Varmi(agacim.kok, sayi))
+                    {
+                        sayi = rnd.Next(500000000);
+                    }
+
+                    agacim.Ekle(sayi);
+                }
+
+                Console.WriteLine("derinlik={0}", agacim.DerinlikBul(agacim.kok));
+            }
+
+          
+            //agacim.AgacYaz();
+
+
+            Console.WriteLine("bitti");
+            Console.ReadKey();
+        }
+    }
+}
